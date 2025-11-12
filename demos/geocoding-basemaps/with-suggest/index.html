@@ -1,0 +1,166 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>Geoenabled form</title>
+  
+  <!-- REST JS -->
+  <script src="https://unpkg.com/@esri/arcgis-rest-request@4.0.0/dist/bundled/request.umd.js"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-geocoding@4.0.0/dist/bundled/geocoding.umd.js"></script>
+  
+  <!-- Calcite Components -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/3.3.3/calcite.esm.js"></script>
+  <link
+  rel="stylesheet"
+  href="https://js.arcgis.com/calcite-components/3.3.3/calcite.css"
+  />
+  
+  <script src="./config.js"></script>
+  <script>
+    var esriConfig= {
+      apiKey: ARCGIS_APIKEY
+    }
+  </script>
+  
+  <!-- Load ArcGIS Maps SDK and components from CDN-->
+  <script src="https://js.arcgis.com/4.34/"></script>
+  <script type="module" src="https://js.arcgis.com/4.34/map-components/"></script>
+  
+  <!-- My scripts -->
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./app.js" type="module" defer></script>
+</head>
+
+<body>
+  <calcite-shell>
+    
+    <calcite-panel>
+      <div id="create--account" class="map-disabled">
+        <div id="left">
+          <h3>Create a new Account</h3>
+          <form>
+            <calcite-label class="form--default">
+              First Name
+              <calcite-input id="input--fname"></calcite-input>
+            </calcite-label>
+            <calcite-label class="form--default">
+              Last Name
+              <calcite-input id="input--lname"></calcite-input>
+            </calcite-label>
+            <calcite-label class="form--full">
+              Email Address
+              <calcite-input id="input--email"></calcite-input>
+            </calcite-label>
+            <calcite-label class="form--full" layout="inline">
+              Add address information
+              <calcite-switch id="switch--address"></calcite-switch>
+            </calcite-label>
+            <div class="form--wide">
+              <calcite-label id="label--address" disabled>
+                Address
+                <calcite-input-text id="input--address"></calcite-input-text>
+              </calcite-label>
+              <calcite-list id="input--address--suggestions"></calcite-list>
+            </div>
+            <calcite-label id="label--postal" disabled>
+              Postal Code
+              <calcite-input-text
+              id="input--postal"
+              pattern="[0-9]{5}"
+              min-length="5"
+              max-length="5"
+              ></calcite-input-text>
+            </calcite-label>
+            <calcite-label class="form--default" id="label--city" disabled>
+              City
+              <calcite-input id="input--city">
+              </calcite-input>
+            </calcite-label>
+            <calcite-label class="form--default" id="label--state" disabled>
+              State
+              <calcite-input id="input--state">
+              </calcite-input>
+            </calcite-label>
+            <div id="create--account--button--container">
+              <calcite-button class="form--full form--button">
+                Create my account
+              </calcite-button>
+            </div>
+          </form>
+        </div>
+        <div id="right">
+          <arcgis-map basemap="arcgis/imagery" center="8.6501,50.1127" zoom="15">
+            <arcgis-search slot="top-right"></arcgis-search>
+          </arcgis-map>
+          
+        </div>
+      </calcite-panel>
+    </div>
+  </div>
+  
+</calcite-shell>
+
+<script>
+  var createGraphic = (lon, lat) => {
+    return {
+      geometry: {
+        type: "point", // autocasts as new Point()
+        longitude: lon,
+        latitude: lat
+      },
+      symbol: {
+        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+        color: [226, 119, 40],
+        outline: {
+          // autocasts as new SimpleLineSymbol()
+          color: [255, 255, 255],
+          width: 2
+        }
+      }
+    }
+  }; 
+</script>
+
+<script type="module">
+  
+  const [locator, esriConfig, Graphic] = await $arcgis.import([
+    "@arcgis/core/rest/locator.js",
+    "@arcgis/core/config.js",
+    "@arcgis/core/Graphic.js"
+  ]);
+  
+  const view = document.querySelector("arcgis-map");
+  
+  // Find address from clicking on map
+  view.addEventListener("arcgisViewClick", (event) => {
+    reverseGeocode(event.detail.mapPoint);
+  });
+  
+  const geocodingService = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  
+  function reverseGeocode(pt) {
+    const params = {
+      location: pt
+    };
+    
+    // Create a graphic and add the geometry and symbol to it
+    const graphic = createGraphic(pt.longitude, pt.latitude);
+    const pointGraphic = new Graphic(graphic);
+
+    locator.locationToAddress(geocodingService, params).then(
+    (response) => {
+      if (response) {
+        let attr = response.attributes
+        document.getElementById("input--postal").value= attr.Postal
+        document.getElementById("input--city").value = attr.City;
+        document.getElementById("input--state").value = attr.Region;
+        document.getElementById("input--address").value = attr.Match_addr
+        view.graphics.removeAll();
+        view.graphics.addMany([pointGraphic]);
+      }
+    }
+    );
+  }
+</script>
+</body>
+</html>

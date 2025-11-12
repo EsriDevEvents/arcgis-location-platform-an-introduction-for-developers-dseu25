@@ -1,0 +1,122 @@
+html,
+body,
+#viewDiv,
+arcgis-map {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+#header-title {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  background-color: --calcite-color-brand;
+}
+
+#create--account {
+  width: 800px;
+  margin: auto;
+  background-color: white;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px darkgray;
+}
+
+#create--account > form {
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+#input--address--suggestions {
+  position: absolute;
+  z-index: 1;
+  box-shadow: 5px 5px 20px darkgray;
+}
+
+.form--default {
+  grid-column-end: span 2;
+}
+
+.form--wide {
+  grid-column-end: span 3;
+}
+
+.form--full {
+  grid-column: 1 / 5;
+}
+
+.form--button {
+  width: 100%;
+  margin: auto;
+}
+
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 600px;
+  width: 400px;
+}
+#left,
+#right{
+  display: inline-block;
+  float: left;
+}
+#left{
+width:40%
+}
+#right{
+  width:40%;
+  margin-left:1rem;
+}
+
+#create--account {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden; 
+}
+
+#create--account #left,
+#create--account #right {
+  box-sizing: border-box;
+  transition:
+    flex-basis 0.3s ease,
+    max-width 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+#create--account.map-disabled #left {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+#create--account.map-disabled #right {
+  flex: 0 0 0;
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(16px);
+  pointer-events: none;
+}
+
+#create--account.map-enabled #left {
+  flex: 1 1 50%;
+  max-width: 50%;
+}
+
+#create--account--button--container {
+  height: 40px !important;
+}
+
+#create--account.map-enabled #right {
+  flex: 1 1 50%;
+  max-width: 50%;
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+#right {
+  min-width: 0;
+}
