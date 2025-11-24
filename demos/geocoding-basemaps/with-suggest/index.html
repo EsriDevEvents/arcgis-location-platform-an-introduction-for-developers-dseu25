@@ -33,7 +33,6 @@
 
 <body>
   <calcite-shell>
-    
     <calcite-panel>
       <div id="create--account" class="map-disabled">
         <div id="left">
@@ -92,12 +91,8 @@
           <arcgis-map basemap="arcgis/imagery" center="8.6501,50.1127" zoom="15">
             <arcgis-search slot="top-right"></arcgis-search>
           </arcgis-map>
-          
         </div>
-      </calcite-panel>
-    </div>
-  </div>
-  
+    </calcite-panel>
 </calcite-shell>
 
 <script>
@@ -136,6 +131,7 @@
     reverseGeocode(event.detail.mapPoint);
   });
   
+  // ArcGIS Location Platform users (Standard endpoint)
   const geocodingService = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   
   function reverseGeocode(pt) {
@@ -147,8 +143,7 @@
     const graphic = createGraphic(pt.longitude, pt.latitude);
     const pointGraphic = new Graphic(graphic);
 
-    locator.locationToAddress(geocodingService, params).then(
-    (response) => {
+    locator.locationToAddress(geocodingService, params).then(response => {
       if (response) {
         let attr = response.attributes
         document.getElementById("input--postal").value= attr.Postal
@@ -156,10 +151,9 @@
         document.getElementById("input--state").value = attr.Region;
         document.getElementById("input--address").value = attr.Match_addr
         view.graphics.removeAll();
-        view.graphics.addMany([pointGraphic]);
+        view.graphics.addMany([pointGraphic]); // Add graphic to graphics layer
       }
-    }
-    );
+    });
   }
 </script>
 </body>
